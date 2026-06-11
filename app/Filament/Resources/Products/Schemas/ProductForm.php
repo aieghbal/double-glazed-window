@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Products\Schemas;
 
+use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Section;
@@ -16,6 +17,14 @@ class ProductForm
             ->components([
                 Section::make(__('products.sections.details'))
                     ->schema([
+                        FileUpload::make('picture')
+                            ->label(__('products.fields.picture'))
+                            ->image()
+                            ->disk('public')
+                            ->directory('products')
+                            ->imageResizeMode('cover')
+                            ->imageResizeTargetWidth(800)
+                            ->imageResizeTargetHeight(800),
                         TextInput::make('title')
                             ->label(__('products.fields.title'))
                             ->required()

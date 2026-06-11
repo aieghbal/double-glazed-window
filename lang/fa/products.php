@@ -10,12 +10,14 @@ return [
     ],
 
     'fields' => [
+        'picture' => 'تصویر',
         'title' => 'عنوان',
         'description' => 'شرح',
         'price' => 'قیمت',
     ],
 
     'columns' => [
+        'picture' => 'تصویر',
         'title' => 'عنوان',
         'description' => 'شرح',
         'price' => 'قیمت',

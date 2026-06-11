@@ -10,12 +10,14 @@ return [
     ],
 
     'fields' => [
+        'picture' => 'Picture',
         'title' => 'Title',
         'description' => 'Description',
         'price' => 'Price',
     ],
 
     'columns' => [
+        'picture' => 'Picture',
         'title' => 'Title',
         'description' => 'Description',
         'price' => 'Price',

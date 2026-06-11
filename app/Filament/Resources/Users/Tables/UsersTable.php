@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Filament\Resources\Products\Tables;
+namespace App\Filament\Resources\Users\Tables;
 
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
@@ -9,35 +9,32 @@ use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 
-class ProductsTable
+class UsersTable
 {
     public static function configure(Table $table): Table
     {
         return $table
             ->columns([
-                ImageColumn::make('picture')
-                    ->label(__('products.columns.picture'))
+                ImageColumn::make('avatar')
+                    ->label(__('users.columns.avatar'))
                     ->disk('public')
                     ->size(40)
                     ->rounded(),
-                TextColumn::make('title')
-                    ->label(__('products.columns.title'))
+                TextColumn::make('name')
+                    ->label(__('users.columns.name'))
                     ->searchable()
                     ->sortable(),
-                TextColumn::make('description')
-                    ->label(__('products.columns.description'))
-                    ->wrap()
-                    ->limit(50),
-                TextColumn::make('price')
-                    ->label(__('products.columns.price'))
-                    ->numeric(decimalPlaces: 2)
+                TextColumn::make('email')
+                    ->label(__('users.columns.email'))
+                    ->searchable()
                     ->sortable(),
                 TextColumn::make('created_at')
+                    ->label(__('users.columns.created_at'))
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
-            ->defaultSort('title')
+            ->defaultSort('name')
             ->filters([
                 //
             ])
