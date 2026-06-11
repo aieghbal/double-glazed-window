@@ -3,6 +3,8 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Models\Product;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Invoice extends Model
 {
@@ -14,6 +16,11 @@ class Invoice extends Model
         'installation_cost',
         'grand_total',
     ];
+
+    public function lineItems(): HasMany
+    {
+        return $this->hasMany(InvoiceItem::class);
+    }
 
     protected $casts = [
         'items' => 'array',
@@ -44,20 +51,37 @@ class Invoice extends Model
     {
         return collect($items)
             ->map(function (array $item): array {
-                $quantity = (float) ($item['quantity'] ?? 0);
-                $length = (float) ($item['length'] ?? 0);
                 $width = (float) ($item['width'] ?? 0);
-                $area = round($length * $width, 3);
+                $length = (float) ($item['length'] ?? $item['height'] ?? 0);
+                $height = (float) ($item['height'] ?? $item['length'] ?? 0);
+                $quantity = (float) ($item['quantity'] ?? 0);
                 $unitPrice = (float) ($item['unit_price'] ?? 0);
+                $area = round($length * $width / 10000, 3);
+                $metraj = $area > 0 ? round(max($area, 0.8) * $quantity, 3) : 0;
+                $lineTotal = round($metraj * $unitPrice, 3);
+
+                $productId = isset($item['product_id']) ? (int) $item['product_id'] : null;
+                $description = $item['description'] ?? null;
+
+                if ($productId !== null && empty($description)) {
+                    $product = Product::find($productId);
+                    $description = $product ? $product->title : null;
+                }
 
                 return [
-                    'description' => $item['description'] ?? null,
-                    'quantity' => $quantity,
-                    'length' => $length,
+                    'row' => isset($item['row']) ? (int) $item['row'] : null,
+                    'product_id' => $productId,
+                    'order_type' => $item['order_type'] ?? null,
+                    'description' => $description,
                     'width' => $width,
+                    'length' => $length,
+                    'height' => $height,
+                    'quantity' => $quantity,
                     'area' => $area,
+                    'meterage' => $metraj,
                     'unit_price' => $unitPrice,
-                    'line_total' => round($quantity * $area * $unitPrice, 3),
+                    'total_price' => $lineTotal,
+                    'line_total' => $lineTotal,
                 ];
             })
             ->values()

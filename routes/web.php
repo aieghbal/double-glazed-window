@@ -8,3 +8,6 @@ Route::get('/', function () {
 });
 
 Route::get('/locale/{locale}', LocaleController::class)->name('locale.switch');
+
+Route::get('/invoices/{invoice}/print', [\App\Http\Controllers\InvoicePrintController::class, 'show'])
+    ->name('invoices.print');

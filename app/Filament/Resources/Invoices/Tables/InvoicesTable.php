@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\Invoices\Tables;
 
 use App\Support\JalaliDate;
+use Filament\Actions\Action;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
@@ -55,6 +56,11 @@ class InvoicesTable
             ])
             ->recordActions([
                 EditAction::make(),
+                Action::make('print')
+                    ->label(__('Print'))
+                    ->icon('heroicon-o-printer')
+                    ->url(fn ($record): string => route('invoices.print', $record))
+                    ->openUrlInNewTab(),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([

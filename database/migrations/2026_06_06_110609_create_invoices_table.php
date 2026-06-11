@@ -19,6 +19,8 @@ return new class extends Migration
             $table->decimal('shipping_cost', 15, 2)->default(0);
             $table->decimal('installation_cost', 15, 2)->default(0);
             $table->decimal('grand_total', 15, 2)->default(0);
+            $table->decimal('length', 15, 2)->default(0);
+            $table->decimal('width', 15, 2)->default(0);
             $table->timestamps();
         });
     }

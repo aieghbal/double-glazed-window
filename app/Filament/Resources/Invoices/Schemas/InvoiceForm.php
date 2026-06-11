@@ -3,9 +3,11 @@
 namespace App\Filament\Resources\Invoices\Schemas;
 
 use App\Models\Invoice;
+use App\Models\Product;
 use App\Support\JalaliDate;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Repeater;
+use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Utilities\Get;
@@ -40,6 +42,13 @@ class InvoiceForm
                         Repeater::make('items')
                             ->label(__('invoices.fields.items'))
                             ->schema([
+                                Select::make('product_id')
+                                    ->label(__('products.fields.title'))
+                                    ->options(fn () => Product::query()->pluck('title', 'id')->toArray())
+                                    ->searchable()
+                                    ->reactive()
+                                    ->afterStateHydrated(fn (Get $get, Set $set) => self::syncProductFields($get, $set))
+                                    ->afterStateUpdated(fn (Get $get, Set $set) => self::syncProductFields($get, $set)),
                                 TextInput::make('description')
                                     ->label(__('invoices.fields.description'))
                                     ->required(),
@@ -74,7 +83,7 @@ class InvoiceForm
                                     ->minValue(0)
                                     ->live()
                                     ->afterStateUpdated(fn (Get $get, Set $set) => self::syncItemAndGrandTotal($get, $set)),
-                                TextInput::make('metraj')
+                                TextInput::make('meterage')
                                     ->label(__('invoices.fields.metraj'))
                                     ->numeric()
                                     ->step(0.001)
@@ -159,7 +168,7 @@ class InvoiceForm
         $metraj = round(max($area, 0.8) * $quantity, 3);
 
         $set('area', $area);
-        $set('metraj', $metraj);
+        $set('meterage', $metraj);
         $set('line_total', round($metraj * $unitPrice, 3));
     }
 
@@ -174,5 +183,28 @@ class InvoiceForm
             ]),
             isAbsolute: true,
         );
+    }
+
+    private static function syncProductFields(Get $get, Set $set): void
+    {
+        $productId = $get('product_id');
+
+        if (! $productId) {
+            return;
+        }
+
+        $product = Product::find($productId);
+
+        if (! $product) {
+            return;
+        }
+
+        $set('description', $product->title);
+
+        if (! $get('unit_price')) {
+            $set('unit_price', $product->price);
+        }
+
+        self::syncItemAndGrandTotal($get, $set);
     }
 }
