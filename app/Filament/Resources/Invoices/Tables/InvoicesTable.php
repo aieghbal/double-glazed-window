@@ -7,6 +7,7 @@ use Filament\Actions\Action;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
+use Filament\Actions\DeleteAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 
@@ -61,7 +62,12 @@ class InvoicesTable
                     ->icon('heroicon-o-printer')
                     ->url(fn ($record): string => route('invoices.print', $record))
                     ->openUrlInNewTab(),
-            ])
+                    DeleteAction::make()
+                        ->label(__('Delete'))
+                        ->icon('heroicon-o-trash')
+                        ->requiresConfirmation()
+                        ->color('danger'),
+                ])
             ->toolbarActions([
                 BulkActionGroup::make([
                     DeleteBulkAction::make(),

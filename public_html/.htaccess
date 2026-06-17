@@ -1,0 +1,17 @@
+<IfModule mod_rewrite.c>
+    <IfModule mod_negotiation.c>
+        Options -MultiViews -Indexes
+    </IfModule>
+
+    RewriteEngine On
+
+    # Serve static files from sibling public folder when they exist there.
+    RewriteCond %{DOCUMENT_ROOT}/../public/%{REQUEST_URI} -f
+    RewriteRule ^(.*)$ ../public/$1 [L]
+
+    RewriteCond %{DOCUMENT_ROOT}/../public/%{REQUEST_URI} -d
+    RewriteRule ^(.*)$ ../public/$1 [L]
+
+    # Route all other requests into Laravel's public index.
+    RewriteRule ^(.*)$ ../public/index.php [L]
+</IfModule>

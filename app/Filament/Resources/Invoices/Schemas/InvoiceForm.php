@@ -33,7 +33,9 @@ class InvoiceForm
                             ->hasToday()
                             ->default(JalaliDate::todayForPicker())
                             ->formatStateUsing(fn (?string $state): ?string => JalaliDate::forPicker($state))
-                            ->dehydrateStateUsing(fn (?string $state): ?string => JalaliDate::toStorage($state)),
+                            ->dehydrateStateUsing(fn (?string $state): ?string => JalaliDate::toStorage($state))
+                            // Show date but disable editing on edit pages
+                            ->disabled(fn (): bool => request()->is('*edit')),
                     ])
                     ->columns(2)
                     ->columnSpanFull(),

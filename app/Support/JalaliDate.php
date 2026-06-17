@@ -13,7 +13,13 @@ class JalaliDate
             return null;
         }
 
-        return Jalali::fromCarbon(Carbon::parse($state))->format('Y/m/d');
+        // Normalize incoming state to a Gregorian datetime string to
+        // prevent timezone/day shifts when the JS picker parses values.
+        if (self::isJalaliFormat($state)) {
+            return Jalali::fromFormat('Y/m/d', $state)->toCarbon()->format('Y-m-d H:i:s');
+        }
+
+        return Carbon::parse($state)->format('Y-m-d H:i:s');
     }
 
     public static function forPicker(?string $state): ?string
@@ -22,11 +28,14 @@ class JalaliDate
             return null;
         }
 
+        // Return a full Gregorian datetime string for the picker so the
+        // frontend JS can parse it without inferring incorrect timezone
+        // offsets.
         if (self::isJalaliFormat($state)) {
-            return Jalali::fromFormat('Y/m/d', $state)->toCarbon()->format('Y-m-d');
+            return Jalali::fromFormat('Y/m/d', $state)->toCarbon()->format('Y-m-d H:i:s');
         }
 
-        return Carbon::parse($state)->format('Y-m-d');
+        return Carbon::parse($state)->format('Y-m-d H:i:s');
     }
 
     public static function forDisplay(?string $state): ?string
@@ -44,7 +53,7 @@ class JalaliDate
 
     public static function todayForPicker(): string
     {
-        return Jalali::now()->toCarbon()->format('Y-m-d');
+        return Jalali::now()->toCarbon()->format('Y-m-d H:i:s');
     }
 
     private static function isJalaliFormat(string $state): bool
